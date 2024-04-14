@@ -1,0 +1,128 @@
+﻿@model ToDoList.Models.User
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+    <title>Register</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Helvetica, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .heading {
+            text-align: center;
+            font-family: "Pacifico", cursive;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 35px !important;
+        }
+
+        .login-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 350px;
+        }
+
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .login-form input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-form input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .login-form p {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .login-form p a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .login-form p a:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            color: red;
+            font-size: 15px;
+        }
+
+        .error ul {
+            padding-left:0;
+            list-style-type: none;
+        }
+    </style>
+
+</head>
+<body>
+    <h1 class="heading">Things To Do</h1>
+    <div class="container">
+        <div class="login-form">
+            <h2>Register</h2>
+            @using (Html.BeginForm("UserRegisteration", "Users", FormMethod.Post))
+            {
+                @Html.LabelFor(model => model.Username)
+                @Html.TextBoxFor(model => model.Username, new { placeholder = "Username" })
+
+                @Html.LabelFor(model => model.Email)
+                @Html.TextBoxFor(model => model.Email, new { placeholder = "Email" })
+
+                @Html.LabelFor(model => model.Password)
+                @Html.PasswordFor(model => model.Password, new { placeholder = "Password" })
+                
+                @Html.ValidationSummary(true, "", new { @class = "error" })
+
+                <input type="submit" value="Register" />
+            }
+            <p>Already have an account? <a href="@Url.Action("Login", "Users")">Login here</a>.</p>
+        </div>
+    </div>
+</body>
+</html>

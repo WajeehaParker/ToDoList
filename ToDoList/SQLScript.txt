@@ -1,0 +1,21 @@
+﻿
+create database ToDoList;
+
+create table Users(
+	UserID int primary key identity,
+	Username varchar(40) not null,
+	Email varchar(40) not null unique,
+	Password  varchar(100) not null
+);
+
+create table Tasks(
+	TaskID int primary key identity,
+	TaskDescription varchar(255) not null,
+	UserID int not null,
+	ToDoDate varchar(20),
+	Status bit,
+	foreign key(UserID) references Users(UserID)
+);
+
+insert into Users values(1, 'Wajeeha', 'wajeehaparker@gmail.com', 'password');
+insert into tasks values(1, 'Coding', 1, '2024-04-12T09:39', 0)

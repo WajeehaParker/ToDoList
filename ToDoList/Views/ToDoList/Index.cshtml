@@ -1,0 +1,197 @@
+﻿@model List<ToDoList.Models.Task>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    bool isEditMode = ViewBag.PageMode == 1 ? true : false;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            padding-top: 20px;
+            background: url('/Content/Images/background5.jpg');
+            background-size: cover;
+        }
+
+        .container {
+            background-color: #fefefe;
+            border-radius: 8px;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .custom-desc-box {
+            border: none;
+            background-color: transparent !important;
+            outline: none;
+            padding-bottom: 0;
+        }
+
+        .custom-date-box {
+            border: none;
+            background-color: transparent !important;
+            outline: none;
+            width: 180px;
+            font-size: 12px;
+            color: darkgrey;
+            padding-top: 0;
+        }
+
+        .custom-desc-box:focus,
+        .custom-date-box:focus {
+            outline: none !important;
+        }
+
+        .editing {
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+
+        @if (isEditMode == true)
+        {
+            <div class="row">
+                <div class="ml-auto">
+                    <div><button type="button" class="btn add-btn"><i class="fa-solid fa-plus"></i></button></div>
+                </div>
+            </div>
+        }
+
+        <table class="table" id="todo-table">
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var task = Model[i];
+                    <tr>
+                        <input type="hidden" class="form-control" id="taskID_@i" value="@task.TaskID" />
+                        @if (isEditMode == true)
+                        {
+                            <td class="center" style="width: 50px;"><input type="checkbox" class="form-check-input" id="status_@i" @(task.Status == true ? "checked" : "") /></td>
+                        }
+                        <td style="width: 1050px; padding: 0;">
+                            <input type="text" class="form-control custom-desc-box" id="description_@i" value="@task.TaskDescription" autocomplete="off" disabled />
+                            <input type="datetime-local" class="form-control custom-date-box" id="tododate_@i" value="@task.ToDoDate" @(task.ToDoDate == null ? "hidden" : "") disabled />
+                            @if (task.ToDoDate == null)
+                            {
+                                <br/>
+                            }
+                        </td>
+                        @if (isEditMode == true)
+                        {
+                            <td class="d-flex align-items-center">
+                                <button type="button" class="btn save-btn" data-row-id="@i" hidden><i class="fas fa-check"></i></button>
+                                <button type="button" class="btn edit-btn" data-row-id="@i"><i class="fas fa-pen-to-square"></i></button>
+                                <form method="post" action="/TodoList/Delete">
+                                    <input type="hidden" name="taskId" value="@task.TaskID" />
+                                    <button type="submit" class="btn delete-btn" data-row-id="@i"><i class="fas fa-trash"></i></button>
+                                </form>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#todo-table").on("click", ".edit-btn", function () {
+                var rowId = $(this).data("row-id");
+                $("#description_" + rowId).prop("disabled", false);
+                $("#tododate_" + rowId).prop("disabled", false);
+                $("#tododate_" + rowId).removeAttr("hidden");
+                $(this).attr("hidden", "hidden");
+                $(".delete-btn[data-row-id='" + rowId + "']").attr("hidden", "hidden");
+                $(".save-btn[data-row-id='" + rowId + "']").removeAttr("hidden");
+                $("#description_" + rowId).addClass("editing");
+            });
+
+            $("#todo-table").on("click", ".save-btn", function () {
+                var rowId = $(this).data("row-id");
+                var taskId = $("#taskID_" + rowId).val();
+                var taskDescription = $("#description_" + rowId).val();
+                var toDoDate = $("#tododate_" + rowId).val();
+                var data = {
+                    TaskID: taskId,
+                    TaskDescription: taskDescription,
+                    ToDoDate: toDoDate,
+                    Status: false
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/TodoList/AddorUpdateTask",
+                    data: data,
+                    success: function (response) {
+                        location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error occurred while saving task: " + error);
+                    }
+                });
+                $(this).attr("hidden", "hidden");
+                $("#description_" + rowId).prop("disabled", true);
+                $("#description_" + rowId).removeClass("editing");
+                $("#tododate_" + rowId).prop("disabled", true);
+                $("#status_" + rowId).prop("disabled", false);
+                $(".edit-btn[data-row-id='" + rowId + "']").removeAttr("hidden");
+                $(".delete-btn[data-row-id='" + rowId + "']").removeAttr("hidden");
+                if (toDoDate == null)
+                    $("#tododate_" + rowId).attr("hidden", "hidden");
+            });
+
+            $(".form-check-input").change(function () {
+                var rowId = $(this).attr("id").split("_")[1];
+                var taskId = $("#taskID_" + rowId).val();
+                var status = $(this).prop("checked");
+                $.ajax({
+                    type: "POST",
+                    url: "/TodoList/updateStatus",
+                    data: { taskID: taskId, status: status },
+                    success: function (response) {
+                        console.log("Status updated successfully.");
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error occurred while updating status: " + error);
+                    }
+                });
+            });
+
+            $(".add-btn").click(function () {
+                var rowID = $("#todo-table tbody tr").length;
+                var newRow = '<tr>' +
+                    '<td><input type="checkbox" class="form-check-input" id="status_' + rowID + '" disabled /></td>' +
+                    '<td style="width: 1050px; padding: 0;"><input type="text" class="form-control custom-desc-box editing" id = "description_' + rowID + '" autocomplete="off" />' +
+                    '<input type="datetime-local" class="form-control custom-date-box" id="tododate_' + rowID + '" /></td>' +
+                    '<td class="d-flex align-items-center">' +
+                    '<button type="button" class="btn save-btn" data-row-id="' + rowID + '"><i class="fas fa-check"></i></button>' +
+                    '<button type="button" class="btn edit-btn" data-row-id="' + rowID + '" hidden><i class="fas fa-pen-to-square"></i></button>' +
+                    '<form method="post" action="/TodoList/Delete">' +
+                    '<input type="hidden" name="taskId" value="' + rowID +'" />' +
+                    '<button type="submit" class="btn delete-btn" data-row-id="' + rowID + '" hidden><i class="fas fa-trash"></i></button>' +
+                    '</form>' +
+                    '</td>' +
+                    '</tr>';
+                $("#todo-table tbody").append(newRow);
+            });
+
+        });
+
+
+    </script>
+</body>
+</html>
