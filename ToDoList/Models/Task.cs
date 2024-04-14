@@ -11,10 +11,12 @@ namespace ToDoList.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class Task
     {
         public int TaskID { get; set; }
+        [Required(ErrorMessage = "Description is required")]
         public string TaskDescription { get; set; }
         public int UserID { get; set; }
         public string ToDoDate { get; set; }

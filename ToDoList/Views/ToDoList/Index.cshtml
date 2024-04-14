@@ -137,21 +137,28 @@
                     url: "/TodoList/AddorUpdateTask",
                     data: data,
                     success: function (response) {
-                        location.reload();
+                        if (response.message != null && response.message != "") {
+                            if (confirm(response.message)) {
+                                location.reload();
+                            }
+                        } else {
+                            location.reload();
+                        }
                     },
                     error: function (xhr, status, error) {
                         console.error("Error occurred while saving task: " + error);
+                        alert(response.message);
                     }
                 });
-                $(this).attr("hidden", "hidden");
-                $("#description_" + rowId).prop("disabled", true);
-                $("#description_" + rowId).removeClass("editing");
-                $("#tododate_" + rowId).prop("disabled", true);
-                $("#status_" + rowId).prop("disabled", false);
-                $(".edit-btn[data-row-id='" + rowId + "']").removeAttr("hidden");
-                $(".delete-btn[data-row-id='" + rowId + "']").removeAttr("hidden");
-                if (toDoDate == null)
-                    $("#tododate_" + rowId).attr("hidden", "hidden");
+                //$(this).attr("hidden", "hidden");
+                //$("#description_" + rowId).prop("disabled", true);
+                //$("#description_" + rowId).removeClass("editing");
+                //$("#tododate_" + rowId).prop("disabled", true);
+                //$("#status_" + rowId).prop("disabled", false);
+                //$(".edit-btn[data-row-id='" + rowId + "']").removeAttr("hidden");
+                //$(".delete-btn[data-row-id='" + rowId + "']").removeAttr("hidden");
+                //if (toDoDate == null)
+                //    $("#tododate_" + rowId).attr("hidden", "hidden");
             });
 
             $(".form-check-input").change(function () {

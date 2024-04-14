@@ -233,7 +233,6 @@
       <DependentUpon>ToDoListEntities.edmx</DependentUpon>
       <LastGenOutput>ToDoListEntities.cs</LastGenOutput>
     </Content>
-    <Content Include="SQL Server details.txt" />
     <Content Include="SQLScript.txt" />
     <Content Include="Content\Images\background.jpg" />
     <Content Include="Content\Images\Brand Rule.PNG" />

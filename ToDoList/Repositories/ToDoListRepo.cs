@@ -19,7 +19,7 @@ namespace ToDoList.Repositories
             if (task.TaskID == 0)
             {
                 _entities.Tasks.Add(task);
-                message = "Task Added Successfully";
+                //message = "Task Added Successfully";
             }
             else
             {
@@ -33,7 +33,7 @@ namespace ToDoList.Repositories
                 {
                     prevTask.TaskDescription = task.TaskDescription;
                     prevTask.ToDoDate = task.ToDoDate;
-                    message = "Task updated successfully";
+                    //message = "Task updated successfully";
                 }
             }
             _entities.SaveChanges();

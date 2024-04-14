@@ -26,15 +26,23 @@ namespace ToDoList.Controllers
         public ActionResult AddorUpdateTask(Task task)
         {
             string message = string.Empty;
-            if (ModelState.IsValid)
+            try
             {
-                task.UserID = Convert.ToInt32(HttpContext.Session["UserID"]);
-                taskRepo.AddorUpdateTask(task, ref message);
-                return Json(new { success = true, taskID=task.TaskID, message });
+                if (ModelState.IsValid)
+                {
+                    task.UserID = Convert.ToInt32(HttpContext.Session["UserID"]);
+                    taskRepo.AddorUpdateTask(task, ref message);
+                    return Json(new { success = true, taskID = task.TaskID, message });
+                }
+                else
+                {
+                    message = string.Join(" ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                    return Json(new { success = false, message });
+                }
             }
-            else
+            catch(Exception ex)
             {
-                message = string.Join(" ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                message = "Exception :: " + ex.Message;
                 return Json(new { success = false, message });
             }
         }
